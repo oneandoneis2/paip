@@ -12,6 +12,7 @@
     (first-name (rest name))
     (first name)))
 
+; 1.1
 (defun last-name (name)
   "Return the last name from a name represented as a list"
   (first (last (remove-if (lambda (test) (member test *postfix-titles*)) name))))
@@ -34,3 +35,10 @@
 ;1. Trace: FIRST-NAME ==> PAULA
 ;PAULA
 ;(untrace first-name)
+
+; 1.2
+(defun power (num ex)
+  "Return num raised to the ex power"
+  (cond ((eq ex 0) 1)
+        ((eq ex 1) num)
+        (t (* num (power num (- ex 1))))))
