@@ -54,7 +54,7 @@
 ; 1.4
 (defun count-anywhere (item expr)
   "Count how many times item appears in expr"
-  (cond ((null expr) 0)
-        ((atom expr) (if (eq expr item) 1 0))
+  (cond ((equal item expr) 1)
+        ((atom expr) 0)
         (t (+ (count-anywhere item (car expr))
               (count-anywhere item (cdr expr))))))
