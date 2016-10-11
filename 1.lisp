@@ -42,3 +42,11 @@
   (cond ((eq ex 0) 1)
         ((eq ex 1) num)
         (t (* num (power num (- ex 1))))))
+
+; 1.3
+(defun count_atom (ex)
+  "Count all non-nil atoms"
+  (cond ((null ex) 0)
+        ((atom ex) 1)
+        (t (+ (count_atom (car ex))
+              (count_atom (cdr ex))))))
