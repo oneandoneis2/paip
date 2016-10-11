@@ -13,3 +13,16 @@
               (Miss Scarlet)))
 
 (mapcar #'first-name names)
+
+;(trace first-name)
+;(first-name '(Madam major general paula jones))
+;1. Trace: (FIRST-NAME '(MADAM MAJOR GENERAL PAULA JONES))
+;2. Trace: (FIRST-NAME '(MAJOR GENERAL PAULA JONES))
+;3. Trace: (FIRST-NAME '(GENERAL PAULA JONES))
+;4. Trace: (FIRST-NAME '(PAULA JONES))
+;4. Trace: FIRST-NAME ==> PAULA
+;3. Trace: FIRST-NAME ==> PAULA
+;2. Trace: FIRST-NAME ==> PAULA
+;1. Trace: FIRST-NAME ==> PAULA
+;PAULA
+;(untrace first-name)
