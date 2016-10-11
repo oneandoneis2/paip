@@ -58,3 +58,8 @@
         ((atom expr) 0)
         (t (+ (count-anywhere item (car expr))
               (count-anywhere item (cdr expr))))))
+
+; 1.5
+(defun dot-product (a b)
+  "Dot product of two lists of numbers"
+  (apply #'+ (mapcar #'* a b)))
