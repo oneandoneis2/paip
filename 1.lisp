@@ -50,3 +50,11 @@
         ((atom ex) 1)
         (t (+ (count_atom (car ex))
               (count_atom (cdr ex))))))
+
+; 1.4
+(defun count-anywhere (item expr)
+  "Count how many times item appears in expr"
+  (cond ((null expr) 0)
+        ((atom expr) (if (eq expr item) 1 0))
+        (t (+ (count-anywhere item (car expr))
+              (count-anywhere item (cdr expr))))))
