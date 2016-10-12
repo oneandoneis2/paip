@@ -36,6 +36,6 @@
   "Generate a random sentence or phrase"
   (cond ((listp phrase)
          (mappend #'generate phrase))
-        ((rewrites phrase)
-         (generate (random-elt (rewrites phrase))))
-        (t (list phrase))))
+        (t (let ((choices (rewrites phrase)))
+             (cond (choices (generate (random-elt choices)))
+                   (t (list phrase)))))))
