@@ -40,3 +40,12 @@
           ((setf choices (rewrites phrase))
            (generate (random-elt choices)))
           (t (list phrase)))))
+
+(defun cross-product (fn xlist ylist)
+  "Apply (fn x y) to all x's and y's in the xlist and ylist"
+  (mappend #'(lambda (y)
+               (mapcar #'(lambda (x) (funcall fn x y)) xlist)) ylist))
+
+(defun combine-all (xlist ylist)
+  "Return a list of lists formed by appending an x to a y"
+  (cross-product #'append xlist ylist))
