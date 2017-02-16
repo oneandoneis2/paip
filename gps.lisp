@@ -4,6 +4,12 @@
 
 ;;;; File gps1.lisp: First version of GPS (General Problem Solver)
 
+(defun mycomplement (fn) #'(lambda (&rest args) (not (apply fn args))))
+(defun find-all (item sequence &rest keyword-args
+                 &key (test #'eql) test-not &allow-other-keys)
+  (if test-not
+    (apply #'remove item sequence :test-not (mycomplement test-not) keyword-args)
+    (apply #'remove item sequence :test (mycomplement test) keyword-args)))
 (defvar *state* nil "The current state: a list of conditions.")
 
 (defvar *ops* nil "A list of available operators.")
@@ -58,3 +64,22 @@
              :preconds '(have-money)
              :add-list '(shop-has-money)
              :del-list '(have-money))))
+
+; (gps '(son-at-home car-needs-battery have-money have-phone-book) '(son-at-school) *school-ops* )
+;
+; (EXECUTING LOOK-UP-NUMBER)
+; (EXECUTING TELEPHONE-SHOP)
+; (EXECUTING TELL-SHOP-PROBLEM)
+; (EXECUTING GIVE-SHOP-MONEY)
+; (EXECUTING SHOP-INSTALLS-BATTERY)
+; (EXECUTING DRIVE-SON-TO-SCHOOL)
+; SOLVED
+;
+; (gps '(son-at-home car-needs-battery have-money ) '(son-at-school) *school-ops* )
+; NIL
+;
+; (gps '(son-at-home car-works ) '(son-at-school) *school-ops* )
+;
+; (EXECUTING DRIVE-SON-TO-SCHOOL)
+; SOLVED
+;
