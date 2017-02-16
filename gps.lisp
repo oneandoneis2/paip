@@ -4,12 +4,7 @@
 
 ;;;; File gps1.lisp: First version of GPS (General Problem Solver)
 
-(defun mycomplement (fn) #'(lambda (&rest args) (not (apply fn args))))
-(defun find-all (item sequence &rest keyword-args
-                 &key (test #'eql) test-not &allow-other-keys)
-  (if test-not
-    (apply #'remove item sequence :test-not (mycomplement test-not) keyword-args)
-    (apply #'remove item sequence :test (mycomplement test) keyword-args)))
+(load "auxfns.lisp")
 (defvar *state* nil "The current state: a list of conditions.")
 
 (defvar *ops* nil "A list of available operators.")
