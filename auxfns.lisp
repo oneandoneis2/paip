@@ -206,9 +206,9 @@
 ;;; Therefore, it would be best to rename the function SYMBOL to something
 ;;; else.  This has not been done (for compatibility with the book).
 
-(defun symbol (&rest args)
-  "Concatenate symbols or strings to form an interned symbol"
-  (intern (format nil "~{~a~}" args)))
+;(defun symbol (&rest args)
+;  "Concatenate symbols or strings to form an interned symbol"
+;  (intern (format nil "~{~a~}" args)))
 
 (defun new-symbol (&rest args)
   "Concatenate symbols or strings to form an uninterned symbol"
@@ -258,7 +258,7 @@
     (fresh-line *debug-io*)
     (apply #'format *debug-io* format-string args)))
 
-(defun debug (&rest ids)
+(defun start-debug (&rest ids)
   "Start dbg output on the given ids."
   (setf *dbg-ids* (union ids *dbg-ids*)))
 

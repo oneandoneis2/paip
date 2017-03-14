@@ -5,35 +5,73 @@
 ;;;; File gps1.lisp: First version of GPS (General Problem Solver)
 
 (load "auxfns.lisp")
-(defvar *state* nil "The current state: a list of conditions.")
 
 (defvar *ops* nil "A list of available operators.")
 
 (defstruct op "An operation"
   (action nil) (preconds nil) (add-list nil) (del-list nil))
 
-(defun GPS (*state* goals *ops*)
-  "General Problem Solver: achieve all goals using *ops*."
-  (if (every #'achieve goals) 'solved))
+(defun GPS (state goals &optional (*ops* *ops*))
+  "General Problem Solver: from state, achieve all goals using *ops*."
+  (remove-if #'atom (achieve-all (cons '(start) state) goals nil)))
 
-(defun achieve (goal)
+(defun achieve-all (state goals goal-stack)
+  "Try to achieve each goal, then make sure they still hold"
+  (let ((current-state state))
+    (if (and (every #'(lambda (g)
+                        (setf current-state
+                              (achieve current-state g goal-stack)))
+                    goals)
+             (subsetp goals current-state :test #'equal))
+      current-state)))
+
+(defun achieve (state goal goal-stack)
   "A goal is achieved if it already holds,
   or if there is an appropriate op for it that is applicable."
-  (or (member goal *state*)
-      (some #'apply-op
-            (find-all goal *ops* :test #'appropriate-p))))
+  (dbg-indent :gps (length goal-stack) "Goal: ~a" goal)
+  (cond ((member-equal goal state) state)
+        ((member-equal goal goal-stack) nil)
+        (t (some #'(lambda (op) (apply-op state goal op goal-stack))
+                 (find-all goal *ops* :test #'appropriate-p)))))
+
+(defun member-equal (item list)
+  (member item list :test #'equal))
 
 (defun appropriate-p (goal op)
   "An op is appropriate to a goal if it is in its add list."
   (member goal (op-add-list op)))
 
-(defun apply-op (op)
-  "Print a message and update *state* if op is applicable."
-  (when (every #'achieve (op-preconds op))
-    (print (list 'executing (op-action op)))
-    (setf *state* (set-difference *state* (op-del-list op)))
-    (setf *state* (union *state* (op-add-list op)))
-    t))
+(defun apply-op (state goal op goal-stack)
+  "Return a new state if op is applicable"
+  (dbg-indent :gps (length goal-stack) "Consider: ~a" (op-action op))
+  (let ((state2 (achieve-all state (op-preconds op)
+                             (cons goal goal-stack))))
+    (unless (null state2)
+      (dbg-indent :gps (length goal-stack) "Action: ~a" (op-action op))
+      (append (remove-if #'(lambda (x)
+                             (member-equal x (op-del-list op)))
+                         state2)
+              (op-add-list op)))))
+
+(defun appropriate-p (goal op)
+  "An op is approrpaite to a goal if the goal is in the add list"
+  (member-equal goal (op-add-list op)))
+
+(defun use (oplist)
+  "Use specified oplist. Return length because reasons"
+  (length (setf *ops* oplist)))
+
+(defun executing-p (x)
+  (starts-with x 'executing))
+
+(defun convert-op (op)
+  (unless (some #'executing-p (op-add-list op))
+    (push (list 'executing (op-action op)) (op-add-list op)))
+  op)
+
+(defun op (action &key preconds add-list del-list)
+  (convert-op (make-op :action action :preconds preconds
+                       :add-list add-list :del-list del-list)))
 
 ;;; ==============================
 
