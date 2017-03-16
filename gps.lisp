@@ -45,7 +45,15 @@
   (cond ((member-equal goal state) state)
         ((member-equal goal goal-stack) nil)
         (t (some #'(lambda (op) (apply-op state goal op goal-stack))
-                 (find-all goal *ops* :test #'appropriate-p)))))
+                 (appropriate-ops goal state)))))
+
+(defun appropriate-ops (goal state)
+  (sort (copy-list (find-all goal *ops* :test #'appropriate-p))
+        #'<
+        :key #'(lambda (op)
+                 (count-if #'(lambda (precond)
+                               (not (member-equal precond state)))
+                           (op-preconds op)))))
 
 (defun member-equal (item list)
   (member item list :test #'equal))
