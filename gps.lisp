@@ -13,10 +13,18 @@
 
 (defun GPS (state goals &optional (*ops* *ops*))
   "General Problem Solver: from state, achieve all goals using *ops*."
-  (remove-if #'atom (achieve-all (cons '(start) state) goals nil)))
+  (find-all-if #'action-p (achieve-all (cons '(start) state) goals nil)))
+
+(defun action-p (x)
+  (or (equal x '(start)) (executing-p x)))
 
 (defun achieve-all (state goals goal-stack)
-  "Try to achieve each goal, then make sure they still hold"
+  "Try to achieve each goal, in multiple orders"
+  (some #'(lambda (goals) (achieve-each state goals goal-stack))
+        (orderings goals)))
+
+(defun achieve-each (state goals goal-stack)
+  "Achieve each goal, and make sure they all still hold at the end"
   (let ((current-state state))
     (if (and (every #'(lambda (g)
                         (setf current-state
@@ -24,6 +32,11 @@
                     goals)
              (subsetp goals current-state :test #'equal))
       current-state)))
+
+(defun orderings (l)
+  (if (> (length l) 1)
+    (list l (reverse l))
+    (list l)))
 
 (defun achieve (state goal goal-stack)
   "A goal is achieved if it already holds,
