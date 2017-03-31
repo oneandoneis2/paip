@@ -13,7 +13,10 @@
   (binding-val (get-binding var bindings)))
 
 (defun extend-bindings (var val bindings)
-  (cons (cons var val) bindings))
+  (cons (cons var val)
+        (if (eq bindings no-bindings)
+          nil
+          bindings)))
 
 (defun pat-match (pattern input &optional (bindings no-bindings))
   (cond ((eq bindings fail) fail)
